@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/try02738again-wq/telegram#readme",
   "dependencies": {
+    "dotenv": "^18.0.4",
     "node-telegram-bot-api": "^2.1.0"
   }
 }
