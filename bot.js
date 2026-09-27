@@ -19,7 +19,23 @@ bot.command('help', (ctx) => {
 });
 
 bot.on('message', (ctx) => {
-    console.log(`Message from ${ctx.from?.username || ctx.from?.first_name}: ${ctx.message?.text || '[non-text message]'}`);
+    const text = ctx.message?.text;
+
+    console.log(
+        `Message from ${ctx.from?.username || ctx.from?.first_name}: ${text || '[non-text message]'}`
+    );
+
+    if (!text) return;
+
+    const urlPattern = /https?:\/\/[^\s]+/i;
+    const match = text.match(urlPattern);
+
+    if (match) {
+        ctx.reply(
+            '🔗 URL received!\n\n' +
+            "I'll process this link soon. 🚀"
+        );
+    }
 });
 
 bot.startPolling();
