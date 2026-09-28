@@ -5,6 +5,26 @@ const { Bot } = require('node-telegram-bot-api');
 const token = process.env.BOT_TOKEN;
 const bot = new Bot(token);
 
+function classifyUrl(urlText) {
+    try {
+        const url = new URL(urlText);
+        const hostname = url.hostname.toLowerCase();
+
+        if (
+            hostname === 'youtube.com' ||
+            hostname === 'www.youtube.com' ||
+            hostname === 'youtu.be' ||
+            hostname === 'www.youtu.be'
+        ) {
+            return 'YouTube';
+        }
+
+        return 'Unknown';
+    } catch {
+        return 'Invalid';
+    }
+}
+
 bot.command('start', (ctx) => {
     ctx.reply(
         '👋 Welcome to Downloader Bot!\n\n' +
@@ -30,10 +50,26 @@ bot.on('message', (ctx) => {
     const urlPattern = /https?:\/\/[^\s]+/i;
     const match = text.match(urlPattern);
 
-    if (match) {
+    if (!match) return;
+
+    const url = match[0];
+    const source = classifyUrl(url);
+
+    console.log(`URL: ${url}`);
+    console.log(`Source: ${source}`);
+
+    if (source === 'YouTube') {
         ctx.reply(
-            '🔗 URL received!\n\n' +
-            "I'll process this link soon. 🚀"
+            '▶️ YouTube URL detected!\n\n' +
+            'Downloader support is coming soon. 🚀'
+        );
+    } else if (source === 'Unknown') {
+        ctx.reply(
+            '⚠️ I found a URL, but I do not support this website yet.'
+        );
+    } else {
+        ctx.reply(
+            '❌ That does not appear to be a valid URL.'
         );
     }
 });
