@@ -26,10 +26,11 @@ function classifyUrl(urlText) {
     }
 }
 
-function downloadYouTube(url) {
+function downloadYouTube(url, onComplete) {
     const command =
         `yt-dlp --js-runtimes node ` +
         `-f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" ` +
+        `--print after_move:filepath ` +
         `-o "downloads/%(title)s.%(ext)s" "${url}"`;
 
     exec(command, (error, stdout, stderr) => {
@@ -38,8 +39,13 @@ function downloadYouTube(url) {
             return;
         }
 
+        const lines = stdout.trim().split('\n');
+        const filePath = lines[lines.length - 1];
+
         console.log('Download completed!');
-        console.log(stdout);
+        console.log(`File: ${filePath}`);
+
+        onComplete(filePath);
     });
 }
 
@@ -82,7 +88,9 @@ bot.on('message', (ctx) => {
             '⬇️ Download started...'
         );
 
-        downloadYouTube(url);
+        downloadYouTube(url, (filePath) => {
+            console.log('Ready to send:', filePath);
+        });
     } else if (source === 'Unknown') {
         ctx.reply(
             '⚠️ I found a URL, but I do not support this website yet.'
