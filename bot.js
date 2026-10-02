@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const { Bot } = require('node-telegram-bot-api');
+const { exec } = require('child_process');
 
 const token = process.env.BOT_TOKEN;
 const bot = new Bot(token);
@@ -23,6 +24,22 @@ function classifyUrl(urlText) {
     } catch {
         return 'Invalid';
     }
+}
+
+function downloadYouTube(url) {
+    const command =
+        `yt-dlp --js-runtimes node -f "137+140-1" ` +
+        `-o "downloads/%(title)s.%(ext)s" "${url}"`;
+
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            console.error('Download failed:', error.message);
+            return;
+        }
+
+        console.log('Download completed!');
+        console.log(stdout);
+    });
 }
 
 bot.command('start', (ctx) => {
@@ -61,8 +78,10 @@ bot.on('message', (ctx) => {
     if (source === 'YouTube') {
         ctx.reply(
             '▶️ YouTube URL detected!\n\n' +
-            'Downloader support is coming soon. 🚀'
+            '⬇️ Download started...'
         );
+
+        downloadYouTube(url);
     } else if (source === 'Unknown') {
         ctx.reply(
             '⚠️ I found a URL, but I do not support this website yet.'
