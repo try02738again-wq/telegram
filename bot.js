@@ -28,7 +28,8 @@ function classifyUrl(urlText) {
 
 function downloadYouTube(url) {
     const command =
-        `yt-dlp --js-runtimes node -f "137+140-1" ` +
+        `yt-dlp --js-runtimes node ` +
+        `-f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" ` +
         `-o "downloads/%(title)s.%(ext)s" "${url}"`;
 
     exec(command, (error, stdout, stderr) => {
